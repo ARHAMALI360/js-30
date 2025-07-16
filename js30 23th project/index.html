@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speech Synthesis</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .voiceinator {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      padding: 40px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 30px 0;
+      color: #333;
+      font-size: 2.5rem;
+      font-weight: 300;
+    }
+
+    .voiceinator textarea {
+      width: 100%;
+      height: 120px;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
+
+    .voiceinator textarea:focus {
+      outline: none;
+      border-color: #ea6666;
+    }
+
+    .voiceinator select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .control-group label {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #555;
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    .control-group span {
+      font-size: 14px;
+      color: #777777;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #e0e0e0;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #71ea66;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #5a6fd8;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #667eea;
+      cursor: pointer;
+      border: none;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button#speak {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    button#speak:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    button#stop {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      color: white;
+    }
+
+    button#stop:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .speaking {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 600px) {
+      .voiceinator {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .controls {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="voiceinator">
+    <h1>🗣️ The Voiceinator 5000</h1>
+    <textarea placeholder="Enter some text to have it spoken...">Hello! I love JavaScript 👋</textarea>
+    <select name="voice" id="voices">
+      <option value="">Select A Voice</option>
+    </select>
+    
+    <div class="controls">
+      <div class="control-group">
+        <label for="rate">Rate</label>
+        <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
+        <span class="rate-value">1</span>
+      </div>
+      
+      <div class="control-group">
+        <label for="pitch">Pitch</label>
+        <input name="pitch" type="range" min="0" max="2" value="1" step="0.1">
+        <span class="pitch-value">1</span>
+      </div>
+    </div>
+    
+    <div class="buttons">
+      <button id="speak">Speak</button>
+      <button id="stop">Stop</button>
+    </div>
+  </div>
+
+  <script>
+    const msg = new SpeechSynthesisUtterance();
+    let voices = [];
+    const voicesDropdown = document.querySelector('[name="voice"]');
+    const options = document.querySelectorAll('[type="range"], [name="voice"]');
+    const speakButton = document.querySelector('#speak');
+    const stopButton = document.querySelector('#stop');
+    const textarea = document.querySelector('textarea');
+    const rateValue = document.querySelector('.rate-value');
+    const pitchValue = document.querySelector('.pitch-value');
+
+    msg.text = textarea.value;
+
+    function populateVoices() {
+      voices = speechSynthesis.getVoices();
+      voicesDropdown.innerHTML = voices
+        .filter(voice => voice.lang.includes('en'))
+        .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+        .join('');
+    }
+
+    function setVoice() {
+      msg.voice = voices.find(voice => voice.name === this.value);
+      toggle();
+    }
+
+    function toggle(startOver = true) {
+      speechSynthesis.cancel();
+      if (startOver) {
+        speechSynthesis.speak(msg);
+        speakButton.classList.add('speaking');
+      }
+    }
+
+    function setOption() {
+      msg[this.name] = this.value;
+      toggle();
+      
+      // Update display values
+      if (this.name === 'rate') {
+        rateValue.textContent = this.value;
+      } else if (this.name === 'pitch') {
+        pitchValue.textContent = this.value;
+      }
+    }
+
+    function speakText() {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        speakButton.classList.remove('speaking');
+        return;
+      }
+      
+      if (textarea.value.trim() !== '') {
+        msg.text = textarea.value;
+        speechSynthesis.speak(msg);
+        speakButton.classList.add('speaking');
+      }
+    }
+
+    function stopSpeaking() {
+      speechSynthesis.cancel();
+      speakButton.classList.remove('speaking');
+    }
+
+    // Event listeners
+    speechSynthesis.addEventListener('voiceschanged', populateVoices);
+    voicesDropdown.addEventListener('change', setVoice);
+    options.forEach(option => option.addEventListener('change', setOption));
+    speakButton.addEventListener('click', speakText);
+    stopButton.addEventListener('click', stopSpeaking);
+
+    // Update text when textarea changes
+    textarea.addEventListener('input', () => {
+      msg.text = textarea.value;
+    });
+
+    // Handle speech events
+    msg.addEventListener('start', () => {
+      speakButton.classList.add('speaking');
+    });
+
+    msg.addEventListener('end', () => {
+      speakButton.classList.remove('speaking');
+    });
+
+    msg.addEventListener('error', () => {
+      speakButton.classList.remove('speaking');
+    });
+
+    // Initialize
+    populateVoices();
+  </script>
+</body>
+</html>

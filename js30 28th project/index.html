@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript30 - Complete Projects Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            min-height: 400px;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .project-content {
+            height: 300px;
+            overflow: hidden;
+        }
+
+        /* Project 1: Drum Kit */
+        .drum-kit {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .key {
+            border: 4px solid black;
+            border-radius: 5px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            transition: all 0.07s;
+            cursor: pointer;
+        }
+
+        .key:hover, .key.playing {
+            transform: scale(1.1);
+            border-color: #ffc600;
+            box-shadow: 0 0 20px #ffc600;
+        }
+
+        .key kbd {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sound {
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Project 2: Clock */
+        .clock {
+            width: 250px;
+            height: 250px;
+            border: 20px solid white;
+            border-radius: 50%;
+            margin: 50px auto;
+            position: relative;
+            background: white;
+            background-size: cover;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .clock-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hand {
+            width: 50%;
+            height: 6px;
+            background: black;
+            position: absolute;
+            top: 50%;
+            transform-origin: 100%;
+            transform: rotate(90deg);
+            transition: all 0.05s;
+            transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+        }
+
+        .hour-hand {
+            width: 30%;
+            left: 20%;
+        }
+
+        .min-hand {
+            left: 0%;
+        }
+
+        .second-hand {
+            background: #ff6b6b;
+            height: 2px;
+        }
+
+        /* Project 3: CSS Variables */
+        .css-variables {
+            text-align: center;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        .controls input {
+            width: 100px;
+            margin: 10px;
+        }
+
+        .css-variables img {
+            padding: var(--spacing, 10px);
+            background: var(--base, #ffc600);
+            filter: blur(var(--blur, 0px));
+            width: 200px;
+            border-radius: 10px;
+        }
+
+        /* Project 4: Array Cardio Display */
+        .array-cardio {
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .array-result {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        /* Project 5: Flex Panels */
+        .panels {
+            min-height: 300px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .panel {
+            background: #6b0f9a;
+            box-shadow: inset 0 0 0 5px rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            align-items: center;
+            transition: font-size 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11),
+                flex 0.7s cubic-bezier(0.61, -0.19, 0.7, -0.11),
+                background 0.2s;
+            font-size: 20px;
+            background-size: cover;
+            background-position: center;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .panel1 { background-image: url('https://source.unsplash.com/400x400/?nature,water'); }
+        .panel2 { background-image: url('https://source.unsplash.com/400x400/?nature,forest'); }
+        .panel3 { background-image: url('https://source.unsplash.com/400x400/?nature,mountain'); }
+
+        .panel > * {
+            margin: 0;
+            width: 100%;
+            transition: transform 0.5s;
+            flex: 1 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .panel > *:first-child { transform: translateY(-100%); }
+        .panel.open-active > *:first-child { transform: translateY(0); }
+        .panel > *:last-child { transform: translateY(100%); }
+        .panel.open-active > *:last-child { transform: translateY(0); }
+
+        .panel p {
+            text-transform: uppercase;
+            font-family: 'Amatic SC', cursive;
+            text-shadow: 0 0 4px rgba(0, 0, 0, 0.72), 0 0 14px rgba(0, 0, 0, 0.45);
+            font-size: 2em;
+        }
+
+        .panel.open {
+            flex: 5;
+            font-size: 40px;
+        }
+
+        /* Project 6: Type Ahead */
+        .type-ahead {
+            text-align: center;
+        }
+
+        .search {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .suggestions {
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .suggestions li {
+            background: white;
+            list-style: none;
+            border-bottom: 1px solid #d8d8d8;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
+            margin: 0;
+            padding: 20px;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            text-transform: capitalize;
+            color: black;
+        }
+
+        .suggestions li:nth-child(even) {
+            transform: perspective(100px) rotateX(3deg) translateY(2px) scale(1.001);
+            background: linear-gradient(to bottom, #ffffff 0%, #efefef 100%);
+        }
+
+        .suggestions li:nth-child(odd) {
+            transform: perspective(100px) rotateX(-3deg) translateY(3px);
+            background: linear-gradient(to top, #ffffff 0%, #efefef 100%);
+        }
+
+        .population {
+            font-size: 15px;
+        }
+
+        /* More project styles continue... */
+        .calculator {
+            max-width: 300px;
+            margin: 0 auto;
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .calc-display {
+            background: #000;
+            color: #fff;
+            font-size: 2rem;
+            padding: 10px;
+            text-align: right;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calc-btn {
+            padding: 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calc-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .calc-btn.operator {
+            background: #ff9500;
+            color: white;
+        }
+
+        .calc-btn.number {
+            background: #505050;
+            color: white;
+        }
+
+        .calc-btn.zero {
+            grid-column: span 2;
+        }
+
+        /* Todo List Styles */
+        .todo-app {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .todo-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            background: rgba(255, 255, 255, 0.2);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Color Palette Generator */
+        .color-palette {
+            display: flex;
+            height: 300px;
+        }
+
+        .color-strip {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .color-strip:hover {
+            flex: 1.5;
+        }
+
+        .color-code {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .project-card {
+                padding: 1rem;
+                min-height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JavaScript30 Projects</h1>
+        <p>30 Vanilla JavaScript Projects in 30 Days Challenge</p>
+    </div>
+
+    <div class="projects-grid">
+        <!-- Project 1: Drum Kit -->
+        <div class="project-card">
+            <h2 class="project-title">01 - JavaScript Drum Kit</h2>
+            <div class="project-content">
+                <div class="drum-kit">
+                    <div data-key="65" class="key">
+                        <kbd>A</kbd>
+                        <span class="sound">clap</span>
+                    </div>
+                    <div data-key="83" class="key">
+                        <kbd>S</kbd>
+                        <span class="sound">hihat</span>
+                    </div>
+                    <div data-key="68" class="key">
+                        <kbd>D</kbd>
+                        <span class="sound">kick</span>
+                    </div>
+                    <div data-key="70" class="key">
+                        <kbd>F</kbd>
+                        <span class="sound">openhat</span>
+                    </div>
+                    <div data-key="71" class="key">
+                        <kbd>G</kbd>
+                        <span class="sound">boom</span>
+                    </div>
+                    <div data-key="72" class="key">
+                        <kbd>H</kbd>
+                        <span class="sound">ride</span>
+                    </div>
+                    <div data-key="74" class="key">
+                        <kbd>J</kbd>
+                        <span class="sound">snare</span>
+                    </div>
+                    <div data-key="75" class="key">
+                        <kbd>K</kbd>
+                        <span class="sound">tom</span>
+                    </div>
+                    <div data-key="76" class="key">
+                        <kbd>L</kbd>
+                        <span class="sound">tink</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 2: CSS + JS Clock -->
+        <div class="project-card">
+            <h2 class="project-title">02 - CSS + JS Clock</h2>
+            <div class="project-content">
+                <div class="clock">
+                    <div class="clock-face">
+                        <div class="hand hour-hand"></div>
+                        <div class="hand min-hand"></div>
+                        <div class="hand second-hand"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 3: CSS Variables -->
+        <div class="project-card">
+            <h2 class="project-title">03 - CSS Variables</h2>
+            <div class="project-content css-variables">
+                <div class="controls">
+                    <label for="spacing">Spacing:</label>
+                    <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+                    
+                    <label for="blur">Blur:</label>
+                    <input id="blur" type="range" name="blur" min="0" max="25" value="0" data-sizing="px">
+                    
+                    <label for="base">Base Color:</label>
+                    <input id="base" type="color" name="base" value="#ffc600">
+                </div>
+                <img src="https://source.unsplash.com/200x200/?nature" alt="Beautiful nature">
+            </div>
+        </div>
+
+        <!-- Project 4: Array Cardio Day 1 -->
+        <div class="project-card">
+            <h2 class="project-title">04 - Array Cardio Day 1</h2>
+            <div class="project-content array-cardio" id="array-cardio">
+                <div class="array-result">
+                    <strong>Array Methods Practice:</strong><br>
+                    Filter, Map, Sort, Reduce examples will appear here...
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 5: Flex Panel Gallery -->
+        <div class="project-card">
+            <h2 class="project-title">05 - Flex Panel Gallery</h2>
+            <div class="project-content">
+                <div class="panels">
+                    <div class="panel panel1">
+                        <p>Hey</p>
+                        <p>Let's</p>
+                        <p>Dance</p>
+                    </div>
+                    <div class="panel panel2">
+                        <p>Give</p>
+                        <p>Take</p>
+                        <p>Receive</p>
+                    </div>
+                    <div class="panel panel3">
+                        <p>Experience</p>
+                        <p>It</p>
+                        <p>Today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 6: Type Ahead -->
+        <div class="project-card">
+            <h2 class="project-title">06 - Type Ahead</h2>
+            <div class="project-content type-ahead">
+                <form class="search">
+                    <input type="text" class="search-input" placeholder="City or State">
+                    <ul class="suggestions">
+                        <li>Filter for a city</li>
+                        <li>or a state</li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+
+        <!-- Project 7: Array Cardio Day 2 -->
+        <div class="project-card">
+            <h2 class="project-title">07 - Array Cardio Day 2</h2>
+            <div class="project-content array-cardio" id="array-cardio-2">
+                <div class="array-result">
+                    <strong>More Array Methods:</strong><br>
+                    Some, Every, Find, FindIndex examples...
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 8: Fun with HTML5 Canvas -->
+        <div class="project-card">
+            <h2 class="project-title">08 - Fun with HTML5 Canvas</h2>
+            <div class="project-content">
+                <canvas id="draw" width="400" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Project 9: Dev Tools Domination -->
+        <div class="project-card">
+            <h2 class="project-title">09 - Dev Tools Domination</h2>
+            <div class="project-content" style="padding: 20px; text-align: center;">
+                <p>Open your browser's Developer Tools (F12) to see various console methods in action!</p>
+                <button onclick="showDevToolsExamples()" style="padding: 10px 20px; background: #ffc600; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">Run Console Examples</button>
+            </div>
+        </div>
+
+        <!-- Project 10: Hold Shift and Check Checkboxes -->
+        <div class="project-card">
+            <h2 class="project-title">10 - Hold Shift and Check Checkboxes</h2>
+            <div class="project-content" style="padding: 20px;">
+                <p style="margin-bottom: 15px; font-size: 14px;">Hold shift and click to check multiple boxes!</p>
+                <div class="inbox">
+                    <div class="item">
+                        <input type="checkbox">
+                        <p>This is an inbox layout.</p>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox">
+                        <p>Check one item</p>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox">
+                        <p>Hold down your Shift key</p>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox">
+                        <p>Check a lower item</p>
+                    </div>
+                    <div class="item">
+                        <input type="checkbox">
+                        <p>Everything in between should also be set to checked</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 11: Custom Video Player -->
+        <div class="project-card">
+            <h2 class="project-title">11 - Custom Video Player</h2>
+            <div class="project-content">
+                <div class="player">
+                    <video class="player__video viewer" src="https://player.vimeo.com/external/194837908.sd.mp4?s=c350076905b78c67f74d7ee39fdb4fef01d12420&profile_id=164"></video>
+                    <div class="player__controls">
+                        <div class="progress">
+                            <div class="progress__filled"></div>
+                        </div>
+                        <button class="player__button toggle" title="Toggle Play">►</button>
+                        <input type="range" name="volume" class="player__slider" min="0" max="1" step="0.05" value="1">
+                        <input type="range" name="playbackRate" class="player__slider" min="0.5" max="2" step="0.1" value="1">
+                        <button data-skip="-10" class="player__button">« 10s</button>
+                        <button data-skip="25" class="player__button">25s »</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 12: Key Sequence Detection -->
+        <div class="project-card">
+            <h2 class="project-title">12 - Key Sequence Detection</h2>
+            <div class="project-content" style="text-align: center; padding: 40px;">
+                <p>Type the secret code: <strong>"secret"</strong></p>
+                <div id="secret-display" style="margin-top: 20px; font-size: 20px; color: #ffc600;"></div>
+            </div>
+        </div>
+
+        <!-- Project 13: Slide in on Scroll -->
+        <div class="project-card">
+            <h2 class="project-title">13 - Slide in on Scroll</h2>
+            <div class="project-content" style="height: 300px; overflow-y: scroll;">
+                <div style="height: 200px; background: rgba(255,255,255,0.1); margin: 20px 0; display: flex; align-items: center; justify-content: center;">
+                    <p>Scroll to see slide-in effect</p>
+                </div>
+                <img class="slide-in" src="https://source.unsplash.com/400x200/?technology" style="width: 100%; opacity: 0; transform: translateX(-30%); transition: all 0.5s;">
+                <div style="height: 200px; background: rgba(255,255,255,0.1); margin: 20px 0;"></div>
+                <img class="slide-in" src="https://source.unsplash.com/400x200/?code" style="width: 100%; opacity: 0; transform: translateX(30%); transition: all 0.5s;">
+            </div>
+        </div>
+
+        <!-- Project 14: JavaScript References VS Copying -->
+        <div class="project-card">
+            <h2 class="project-title">14 - JavaScript References VS Copying</h2>
+            <div class="project-content array-cardio" id="references-copying">
+                <div class="array-result">
+                    <strong>Understanding References vs Copies:</strong><br>
+                    Examples of how JavaScript handles object and array copying...
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 15: LocalStorage -->
+        <div class="project-card">
+            <h2 class="project-title">15 - LocalStorage and Event Delegation</h2>
+            <div class="project-content">
+                <div class="todo-app">
+                    <input type="text" class="todo-input" placeholder="Add new todo item...">
+                    <ul class="todo-list" id="todo-list">
+                        <!-- Todo items will be added here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 16: Mouse Move Shadow -->
+        <div class="project-card">
+            <h2 class="project-title">16 - Mouse Move Shadow</h2>
+            <div class="project-content" id="mouse-shadow" style="background: #ffc600; display: flex; align-items: center; justify-content: center; position: relative;">
+                <h1 style="color: white; text-shadow: 10px 10px 0 rgba(0,0,0,1); font-size: 3rem;">WOAH!</h1>
+            </div>
+        </div>
+
+        <!-- Project 17: Sort Without Articles -->
+        <div class="project-card">
+            <h2 class="project-title">17 - Sort Without Articles</h2>
+            <div class="project-content array-cardio" id="sort-articles">
+                <div class="array-result">
+                    <strong>Sorted Band Names (ignoring A, An, The):</strong><br>
+                    <ol id="band-list"></ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 18: Adding Up Times with Reduce -->
+        <div class="project-card">
+            <h2 class="project-title">18 - Adding Up Times with Reduce</h2>
+            <div class="project-content array-cardio" id="time-reduce">
+                <div class="array-result">
+                    <strong>Video Playlist Duration Calculator:</strong><br>
+                    <div id="time-list"></div>
+                    <div id="total-time"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 19: Webcam Fun -->
+        <div class="project-card">
+            <h2 class="project-title">19 - Webcam Fun</h2>
+            <div class="project-content" style="text-align: center;">
+                <video class="player" width="200" height="150"></video>
+                <canvas class="photo" width="200" height="150"></canvas>
+                <div class="strip"></div>
+                <button onclick="takePhoto()" style="padding: 10px; margin-top: 10px;">Take Photo</button>
+            </div>
+        </div>
+
+        <!-- Project 20: Speech Detection -->
+        <div class="project-card">
+            <h2 class="project-title">20 - Speech Detection</h2>
+            <div class="project-content" style="text-align: center; padding: 20px;">
+                <button onclick="startSpeechRecognition()" style="padding: 15px 30px; background: #ffc600; border: none; border-radius: 5px; cursor: pointer;">Start Speaking</button>
+                <div class="words" style="margin-top: 20px; min-height: 100px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px;">
+                    <p>Click the button and start speaking...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 21: Geolocation -->
+        <div class="project-card">
+            <h2 class="project-title">21 - Geolocation</h2>
+            <div class="project-content" style="text-align: center; padding: 20px;">
+                <button onclick="getLocation()" style="padding: 15px 30px; background: #ffc600; border: none; border-radius: 5px; cursor: pointer;">Get My Location</button>
+                <div id="location-info" style="margin-top: 20px;">
+                    <p>Click to get your current location</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project 22: Follow Along Link Highlighter -->
+        <div class="project-card">
+            <h2 class="project-title">22 - Follow Along Link Highlighter</h2>
+            <div class="project-content" style="padding: 20px;">
+                <nav>
+                    <a href="#" style="color: white; margin: 0 10px;">Home</a>
+                    <a href="#" style="color: white; margin: 0 10px;">About</a>
+                    <a href="#" style="color: white; margin: 0 10px;">Services</a>
+                    <a href="#" style="color: white; margin: 0 10px;">Contact</a>
+                </nav>
+                <div class="highlight" style="position: absolute; background: #ffc600; height: 20px; transition: all 0.3s ease;"></div>

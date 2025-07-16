@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adding Up Times with Reduce</title>
+    <style>
+        html {
+            box-sizing: border-box;
+            font-size: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .wrapper {
+            max-width: 700px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 100;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.4rem;
+            opacity: 0.8;
+        }
+
+        .videos {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .videos li {
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: white;
+            font-size: 1.6rem;
+            transition: all 0.2s;
+        }
+
+        .videos li:hover {
+            background: #f8f9fa;
+            transform: scale(1.02);
+        }
+
+        .videos li:last-child {
+            border-bottom: 0;
+        }
+
+        .video-time {
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .controls {
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result.show {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .video-icon {
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .wrapper {
+                margin: 10px;
+                max-width: 100%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .videos li {
+                padding: 15px 20px;
+                font-size: 1.4rem;
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .controls {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1>📹 Video Time Calculator</h1>
+            <p>Calculate total runtime using Array.reduce()</p>
+        </div>
+
+        <ul class="videos">
+            <li data-time="5:43">
+                <span><span class="video-icon">🎬</span>Flexbox Video Tutorial</span>
+                <span class="video-time">5:43</span>
+            </li>
+            <li data-time="2:33">
+                <span><span class="video-icon">🎥</span>Flexbox Video Tutorial</span>
+                <span class="video-time">2:33</span>
+            </li>
+            <li data-time="3:45">
+                <span><span class="video-icon">🎞️</span>Redux Video Tutorial</span>
+                <span class="video-time">3:45</span>
+            </li>
+            <li data-time="0:47">
+                <span><span class="video-icon">📺</span>Flexbox Video Tutorial</span>
+                <span class="video-time">0:47</span>
+            </li>
+            <li data-time="5:21">
+                <span><span class="video-icon">🎦</span>Redux Video Tutorial</span>
+                <span class="video-time">5:21</span>
+            </li>
+            <li data-time="6:56">
+                <span><span class="video-icon">🎬</span>JavaScript Array Methods</span>
+                <span class="video-time">6:56</span>
+            </li>
+            <li data-time="3:46">
+                <span><span class="video-icon">🎥</span>CSS Grid Tutorial</span>
+                <span class="video-time">3:46</span>
+            </li>
+            <li data-time="4:40">
+                <span><span class="video-icon">🎞️</span>JavaScript ES6 Features</span>
+                <span class="video-time">4:40</span>
+            </li>
+            <li data-time="7:13">
+                <span><span class="video-icon">📺</span>React Hooks Tutorial</span>
+                <span class="video-time">7:13</span>
+            </li>
+            <li data-time="2:58">
+                <span><span class="video-icon">🎦</span>CSS Animation Tutorial</span>
+                <span class="video-time">2:58</span>
+            </li>
+        </ul>
+
+        <div class="controls">
+            <button class="btn" id="calculateBtn">Calculate Total Time</button>
+            <div class="result" id="result">
+                Click the button to calculate total runtime
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateTotalTime() {
+            // Get all nodes with data-time attribute
+            const timeNodes = Array.from(document.querySelectorAll('[data-time]'));
+            
+            // Convert time strings to seconds and sum them up using reduce
+            const totalSeconds = timeNodes
+                .map(node => node.dataset.time)
+                .map(timeCode => {
+                    const [mins, secs] = timeCode.split(':').map(parseFloat);
+                    return (mins * 60) + secs;
+                })
+                .reduce((total, videoSeconds) => total + videoSeconds, 0);
+
+            // Convert total seconds back to hours, minutes, and seconds
+            let secondsLeft = totalSeconds;
+            const hours = Math.floor(secondsLeft / 3600);
+            secondsLeft = secondsLeft % 3600;
+            
+            const minutes = Math.floor(secondsLeft / 60);
+            secondsLeft = secondsLeft % 60;
+
+            // Display the result
+            const resultElement = document.getElementById('result');
+            const timeString = `${hours} hours, ${minutes} minutes, ${Math.floor(secondsLeft)} seconds`;
+            
+            resultElement.textContent = `Total Runtime: ${timeString}`;
+            resultElement.classList.add('show');
+            
+            // Also log to console for debugging
+            console.log(`Total time: ${timeString}`);
+            console.log(`Total seconds: ${totalSeconds}`);
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                resultElement.classList.remove('show');
+            }, 500);
+        }
+
+        // Add event listener to the button
+        document.getElementById('calculateBtn').addEventListener('click', calculateTotalTime);
+
+        // Auto-calculate on page load for demo
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(calculateTotalTime, 1000);
+        });
+
+        // Add hover effects to video items
+        document.querySelectorAll('.videos li').forEach(li => {
+            li.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            li.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

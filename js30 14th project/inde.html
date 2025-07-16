@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS30 Day 14 - References VS Copying</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #4a5568;
+        }
+
+        .output {
+            background: #1a202c;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #68d391;
+        }
+
+        .warning {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #c53030;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #2f855a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #2f855a;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .highlight {
+            background: #fef5e7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 References VS Copying</h1>
+        <p class="subtitle">Understanding the difference between references and copies in JavaScript</p>
+
+        <div class="section">
+            <h2>📝 Strings, Numbers and Booleans</h2>
+            <p>Primitive values are <span class="highlight">copied by value</span></p>
+            <div class="code-block" id="primitives-code">
+// Click "Run Primitives Demo" to see the results
+            </div>
+            <button onclick="runPrimitivesDemo()">Run Primitives Demo</button>
+            <div id="primitives-output"></div>
+        </div>
+
+        <div class="section">
+            <h2>📚 Arrays - The Reference Problem</h2>
+            <p>Arrays are <span class="highlight">copied by reference</span> - changes affect the original!</p>
+            <div class="code-block" id="arrays-problem-code">
+// Click "Show Array Problem" to see the issue
+            </div>
+            <button onclick="showArrayProblem()">Show Array Problem</button>
+            <div id="arrays-problem-output"></div>
+        </div>
+
+        <div class="section">
+            <h2>✅ Array Copying Solutions</h2>
+            <p>Different ways to make <span class="highlight">true copies</span> of arrays</p>
+            <div class="demo-container">
+                <div>
+                    <button onclick="arraySliceDemo()">Array.slice()</button>
+                    <button onclick="arrayFromDemo()">Array.from()</button>
+                </div>
+                <div>
+                    <button onclick="spreadOperatorDemo()">Spread [...array]</button>
+                    <button onclick="concatDemo()">concat()</button>
+                </div>
+            </div>
+            <div id="array-solutions-output"></div>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ Objects - Reference Issues</h2>
+            <p>Objects have the same reference problem as arrays</p>
+            <div class="code-block" id="objects-problem-code">
+// Click "Show Object Problem" to see the issue
+            </div>
+            <button onclick="showObjectProblem()">Show Object Problem</button>
+            <div id="objects-problem-output"></div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Object Copying Solutions</h2>
+            <div class="demo-container">
+                <div>
+                    <button onclick="objectAssignDemo()">Object.assign()</button>
+                    <button onclick="objectSpreadDemo()">Spread {...obj}</button>
+                </div>
+                <div>
+                    <button onclick="jsonDemo()">JSON.parse/stringify</button>
+                    <button onclick="lodashDemo()">Lodash cloneDeep</button>
+                </div>
+            </div>
+            <div id="object-solutions-output"></div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ Shallow vs Deep Copying</h2>
+            <p>Understanding the difference between shallow and deep copies</p>
+            <button onclick="shallowVsDeepDemo()">Show Shallow vs Deep</button>
+            <div id="shallow-deep-output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Utility function to display output
+        function displayOutput(elementId, content, type = 'output') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}">${content}</div>`;
+        }
+
+        // Primitives Demo
+        function runPrimitivesDemo() {
+            const code = `let age = 100;
+let age2 = age;
+console.log(age, age2); // 100, 100
+
+age = 200;
+console.log(age, age2); // 200, 100 (age2 unchanged!)
+
+let name = 'Wes';
+let name2 = name;
+console.log(name, name2); // Wes, Wes
+
+name = 'Wesley';
+console.log(name, name2); // Wesley, Wes (name2 unchanged!)`;
+
+            document.getElementById('primitives-code').textContent = code;
+
+            let age = 100;
+            let age2 = age;
+            let result = `Initial: age = ${age}, age2 = ${age2}\n`;
+            
+            age = 200;
+            result += `After changing age: age = ${age}, age2 = ${age2}\n\n`;
+
+            let name = 'Wes';
+            let name2 = name;
+            result += `Initial: name = '${name}', name2 = '${name2}'\n`;
+            
+            name = 'Wesley';
+            result += `After changing name: name = '${name}', name2 = '${name2}'\n`;
+            result += `\n✅ Primitives are copied by VALUE - changes don't affect copies!`;
+
+            displayOutput('primitives-output', result, 'success');
+        }
+
+        // Array Problem Demo
+        function showArrayProblem() {
+            const code = `const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+const team = players;
+console.log(players, team);
+
+team[3] = 'Lux';
+console.log(players, team); // Both arrays changed! 😱`;
+
+            document.getElementById('arrays-problem-code').textContent = code;
+
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+            const team = players;
+            
+            let result = `Initial:\nplayers = [${players.join(', ')}]\nteam = [${team.join(', ')}]\n\n`;
+            
+            team[3] = 'Lux';
+            
+            result += `After team[3] = 'Lux':\nplayers = [${players.join(', ')}]\nteam = [${team.join(', ')}]\n\n`;
+            result += `⚠️ PROBLEM: Both arrays changed because they reference the same array!`;
+
+            displayOutput('arrays-problem-output', result, 'warning');
+        }
+
+        // Array Solutions
+        function arraySliceDemo() {
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+            const team2 = players.slice();
+            team2[3] = 'Lux';
+            
+            const result = `Using Array.slice():\nOriginal: [${players.join(', ')}]\nCopy: [${team2.join(', ')}]\n✅ Original unchanged!`;
+            displayOutput('array-solutions-output', result, 'success');
+        }
+
+        function arrayFromDemo() {
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+            const team3 = Array.from(players);
+            team3[3] = 'Lux';
+            
+            const result = `Using Array.from():\nOriginal: [${players.join(', ')}]\nCopy: [${team3.join(', ')}]\n✅ Original unchanged!`;
+            displayOutput('array-solutions-output', result, 'success');
+        }
+
+        function spreadOperatorDemo() {
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+            const team4 = [...players];
+            team4[3] = 'Lux';
+            
+            const result = `Using Spread Operator [...]:\nOriginal: [${players.join(', ')}]\nCopy: [${team4.join(', ')}]\n✅ Original unchanged!`;
+            displayOutput('array-solutions-output', result, 'success');
+        }
+
+        function concatDemo() {
+            const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+            const team5 = [].concat(players);
+            team5[3] = 'Lux';
+            
+            const result = `Using concat():\nOriginal: [${players.join(', ')}]\nCopy: [${team5.join(', ')}]\n✅ Original unchanged!`;
+            displayOutput('array-solutions-output', result, 'success');
+        }
+
+        // Object Problem Demo
+        function showObjectProblem() {
+            const code = `const person = {
+  name: 'Wes Bos',
+  age: 80
+};
+
+const captain = person;
+captain.number = 99;
+
+console.log(person, captain); // Both objects changed! 😱`;
+
+            document.getElementById('objects-problem-code').textContent = code;
+
+            const person = {
+                name: 'Wes Bos',
+                age: 80
+            };
+
+            const captain = person;
+            captain.number = 99;
+
+            const result = `After captain.number = 99:
+person = ${JSON.stringify(person, null, 2)}
+captain = ${JSON.stringify(captain, null, 2)}
+
+⚠️ PROBLEM: Both objects changed because they reference the same object!`;
+
+            displayOutput('objects-problem-output', result, 'warning');
+        }
+
+        // Object Solutions
+        function objectAssignDemo() {
+            const person = { name: 'Wes Bos', age: 80 };
+            const cap2 = Object.assign({}, person);
+            cap2.number = 99;
+            cap2.age = 12;
+
+            const result = `Using Object.assign():
+Original: ${JSON.stringify(person, null, 2)}
+Copy: ${JSON.stringify(cap2, null, 2)}
+✅ Original unchanged!`;
+
+            displayOutput('object-solutions-output', result, 'success');
+        }
+
+        function objectSpreadDemo() {
+            const person = { name: 'Wes Bos', age: 80 };
+            const cap3 = {...person};
+            cap3.number = 99;
+            cap3.age = 12;
+
+            const result = `Using Spread Operator {...}:
+Original: ${JSON.stringify(person, null, 2)}
+Copy: ${JSON.stringify(cap3, null, 2)}
+✅ Original unchanged!`;
+
+            displayOutput('object-solutions-output', result, 'success');
+        }
+
+        function jsonDemo() {
+            const person = { name: 'Wes Bos', age: 80 };
+            const cap4 = JSON.parse(JSON.stringify(person));
+            cap4.number = 99;
+            cap4.age = 12;
+
+            const result = `Using JSON.parse(JSON.stringify()):
+Original: ${JSON.stringify(person, null, 2)}
+Copy: ${JSON.stringify(cap4, null, 2)}
+✅ Original unchanged! (Deep copy)`;
+
+            displayOutput('object-solutions-output', result, 'success');
+        }
+
+        function lodashDemo() {
+            const result = `Lodash cloneDeep() - External Library:
+const deepCopy = _.cloneDeep(originalObject);
+
+✅ Creates true deep copies of nested objects
+⚠️ Requires lodash library`;
+
+            displayOutput('object-solutions-output', result, 'output');
+        }
+
+        // Shallow vs Deep Demo
+        function shallowVsDeepDemo() {
+            const wes = {
+                name: 'Wes',
+                age: 100,
+                social: {
+                    twitter: '@wesbos',
+                    facebook: 'wesbos.developer'
+                }
+            };
+
+            // Shallow copy
+            const dev = Object.assign({}, wes);
+            dev.social.twitter = '@coolman';
+
+            // Deep copy
+            const dev2 = JSON.parse(JSON.stringify(wes));
+            dev2.social.facebook = 'coolman.developer';
+
+            const result = `SHALLOW COPY PROBLEM:
+Original after shallow copy change:
+${JSON.stringify(wes, null, 2)}
+
+⚠️ Notice twitter changed in original! Nested objects still reference the same object.
+
+DEEP COPY SOLUTION:
+Using JSON.parse(JSON.stringify()) creates completely independent copies.
+✅ Changes to nested properties don't affect the original.`;
+
+            displayOutput('shallow-deep-output', result, 'warning');
+        }
+
+        // Initialize with first demo
+        runPrimitivesDemo();
+    </script>
+</body>
+</html>

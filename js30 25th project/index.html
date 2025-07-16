@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Capture, Propagation, Bubbling and Once</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 300px;
+        }
+
+        .demo-section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .boxes {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .box {
+            padding: 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .one {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .two {
+            background: linear-gradient(45deg, #4ecdc4, #2196f3);
+            margin: 20px;
+        }
+
+        .three {
+            background: linear-gradient(45deg, #45b7d1, #96c93d);
+            margin: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: white;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        button.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+        }
+
+        .log {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 2px solid #333;
+        }
+
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .log-entry.capture {
+            background-color: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+
+        .log-entry.bubble {
+            background-color: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+        }
+
+        .explanation {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .explanation h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .explanation ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .explanation li {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .clear-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52) !important;
+            margin-top: 10px;
+        }
+
+        .once-demo {
+            background: #f0f8ff;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .once-demo button {
+            background: linear-gradient(45deg, #96c93d, #45b7d1);
+            font-size: 16px;
+            padding: 15px 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .demo-section {
+                min-width: auto;
+                width: 100%;
+                max-width: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Event Capture, Propagation, Bubbling & Once</h1>
+    
+    <div class="container">
+        <div class="demo-section">
+            <h2>📦 Event Flow Demo</h2>
+            
+            <div class="buttons">
+                <button id="captureBtn" class="active">Capture Phase</button>
+                <button id="bubbleBtn">Bubble Phase</button>
+                <button id="bothBtn">Both Phases</button>
+            </div>
+            
+            <div class="boxes">
+                <div class="box one" data-name="Outer Box">
+                    Click me! (Outer)
+                    <div class="box two" data-name="Middle Box">
+                        Click me! (Middle)
+                        <div class="box three" data-name="Inner Box">
+                            Click me! (Inner)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="clear-btn" onclick="clearLog()">Clear Log</button>
+            <div class="log" id="eventLog"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>🔄 Once Option Demo</h2>
+            
+            <div class="once-demo">
+                <p>This button will only work <strong>once</strong>!</p>
+                <button id="onceBtn">Click Me Once!</button>
+                <p id="onceStatus">Status: Ready to click</p>
+            </div>
+
+            <div class="explanation">
+                <h3>🎓 What's Happening?</h3>
+                <ul>
+                    <li><strong>Capture Phase:</strong> Events travel down from window to target</li>
+                    <li><strong>Bubble Phase:</strong> Events travel up from target to window</li>
+                    <li><strong>stopPropagation():</strong> Stops the event from continuing</li>
+                    <li><strong>once: true:</strong> Event listener runs only once, then removes itself</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get all elements
+        const boxes = document.querySelectorAll('.box');
+        const eventLog = document.getElementById('eventLog');
+        const captureBtn = document.getElementById('captureBtn');
+        const bubbleBtn = document.getElementById('bubbleBtn');
+        const bothBtn = document.getElementById('bothBtn');
+        const onceBtn = document.getElementById('onceBtn');
+        const onceStatus = document.getElementById('onceStatus');
+
+        let currentMode = 'capture';
+        let eventCounter = 0;
+
+        // Function to log events
+        function logEvent(message, phase = '') {
+            eventCounter++;
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${phase}`;
+            logEntry.innerHTML = `${eventCounter}. ${message}`;
+            eventLog.appendChild(logEntry);
+            eventLog.scrollTop = eventLog.scrollHeight;
+        }
+
+        // Function to clear log
+        function clearLog() {
+            eventLog.innerHTML = '';
+            eventCounter = 0;
+        }
+
+        // Function to handle box clicks
+        function handleBoxClick(e) {
+            const boxName = e.currentTarget.dataset.name;
+            const phase = e.eventPhase === 1 ? 'capture' : 'bubble';
+            const phaseText = e.eventPhase === 1 ? 'CAPTURE' : 'BUBBLE';
+            
+            logEvent(`${phaseText}: ${boxName} clicked`, phase);
+            
+            // Uncomment this line to stop propagation
+            // e.stopPropagation();
+        }
+
+        // Function to setup event listeners
+        function setupEventListeners() {
+            // Remove existing listeners
+            boxes.forEach(box => {
+                box.removeEventListener('click', handleBoxClick, true);
+                box.removeEventListener('click', handleBoxClick, false);
+            });
+
+            // Add new listeners based on current mode
+            boxes.forEach(box => {
+                if (currentMode === 'capture') {
+                    box.addEventListener('click', handleBoxClick, true); // Capture phase
+                } else if (currentMode === 'bubble') {
+                    box.addEventListener('click', handleBoxClick, false); // Bubble phase
+                } else if (currentMode === 'both') {
+                    box.addEventListener('click', handleBoxClick, true); // Capture phase
+                    box.addEventListener('click', handleBoxClick, false); // Bubble phase
+                }
+            });
+        }
+
+        // Button event handlers
+        captureBtn.addEventListener('click', () => {
+            currentMode = 'capture';
+            updateActiveButton(captureBtn);
+            setupEventListeners();
+            clearLog();
+            logEvent('📡 Mode: CAPTURE ONLY - Events flow down from parent to child');
+        });
+
+        bubbleBtn.addEventListener('click', () => {
+            currentMode = 'bubble';
+            updateActiveButton(bubbleBtn);
+            setupEventListeners();
+            clearLog();
+            logEvent('🫧 Mode: BUBBLE ONLY - Events flow up from child to parent');
+        });
+
+        bothBtn.addEventListener('click', () => {
+            currentMode = 'both';
+            updateActiveButton(bothBtn);
+            setupEventListeners();
+            clearLog();
+            logEvent('🔄 Mode: BOTH PHASES - Events flow down then up');
+        });
+
+        // Function to update active button
+        function updateActiveButton(activeBtn) {
+            [captureBtn, bubbleBtn, bothBtn].forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeBtn.classList.add('active');
+        }
+
+        // Once button demo
+        onceBtn.addEventListener('click', function() {
+            onceStatus.textContent = 'Status: Button clicked! 🎉';
+            onceStatus.style.color = '#4ecdc4';
+            onceStatus.style.fontWeight = 'bold';
+            this.disabled = true;
+            this.textContent = 'Already Clicked!';
+            this.style.opacity = '0.6';
+            
+            // Show that it only works once
+            setTimeout(() => {
+                onceStatus.innerHTML = 'Status: This listener has been <strong>automatically removed</strong>';
+                onceStatus.style.color = '#ff6b6b';
+            }, 1000);
+        }, { once: true }); // This is the key part - { once: true }
+
+        // Initialize
+        setupEventListeners();
+        logEvent('🚀 Ready! Click the nested boxes to see event flow in action');
+        logEvent('💡 Try changing modes to see different behaviors');
+
+        // Add some educational content
+        setTimeout(() => {
+            logEvent('📚 Pro tip: Use stopPropagation() to prevent event bubbling');
+        }, 2000);
+    </script>
+</body>
+</html>

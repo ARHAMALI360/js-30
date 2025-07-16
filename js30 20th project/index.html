@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speech Detection</title>
+  <style>
+    html {
+      font-size: 10px;
+    }
+
+    body {
+      background: #654ea3;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 200;
+      font-size: 20px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .title {
+      text-align: center;
+      color: white;
+      font-size: 3rem;
+      font-weight: 100;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .words {
+      max-width: 90%;
+      margin: 50px auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      font-size: 20px;
+      line-height: 1.8;
+      min-height: 400px;
+      position: relative;
+    }
+
+    .words:before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 20px solid white;
+    }
+
+    p {
+      margin: 0 0 20px;
+      padding: 0;
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .controls {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .mic-button {
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      font-size: 2rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .mic-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .mic-button.listening {
+      background: #ff6b6b;
+      color: white;
+      animation: pulse-red 1s infinite;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    .status {
+      text-align: center;
+      color: white;
+      margin: 1rem 0;
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    .info {
+      text-align: center;
+      color: white;
+      margin: 2rem 0;
+      font-size: 1rem;
+      opacity: 0.7;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .clear-button {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .clear-button:hover {
+      background: white;
+      color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+      .title {
+        font-size: 2rem;
+      }
+      
+      .words {
+        padding: 20px;
+        font-size: 18px;
+        margin: 20px auto;
+      }
+      
+      .container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">🎤 Speech Detection</h1>
+    
+    <div class="controls">
+      <button class="mic-button" id="micButton">🎤</button>
+      <div class="status" id="status">Click the microphone to start</div>
+      <button class="clear-button" id="clearButton">Clear Text</button>
+    </div>
+
+    <div class="info">
+      <p>This demo uses the Web Speech API. Please allow microphone access when prompted. Currently works best in Chrome and Edge browsers.</p>
+    </div>
+
+    <div class="words" id="words">
+      <p>Start speaking and your words will appear here...</p>
+    </div>
+  </div>
+
+  <script>
+    // Check if browser supports Speech Recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      document.getElementById('status').textContent = 'Sorry, your browser does not support Speech Recognition';
+      document.getElementById('micButton').disabled = true;
+    } else {
+      // Initialize Speech Recognition
+      const recognition = new SpeechRecognition();
+      const wordsDiv = document.getElementById('words');
+      const micButton = document.getElementById('micButton');
+      const statusDiv = document.getElementById('status');
+      const clearButton = document.getElementById('clearButton');
+      
+      let p = document.createElement('p');
+      let isListening = false;
+
+      // Configure recognition settings
+      recognition.interimResults = true; // Show results as user speaks
+      recognition.continuous = true; // Keep listening
+      recognition.lang = 'en-US'; // Set language
+
+      // Start/Stop recognition when button is clicked
+      micButton.addEventListener('click', () => {
+        if (!isListening) {
+          startListening();
+        } else {
+          stopListening();
+        }
+      });
+
+      // Clear text button
+      clearButton.addEventListener('click', () => {
+        wordsDiv.innerHTML = '<p>Start speaking and your words will appear here...</p>';
+        p = document.createElement('p');
+      });
+
+      function startListening() {
+        recognition.start();
+        isListening = true;
+        micButton.classList.add('listening');
+        micButton.textContent = '🛑';
+        statusDiv.textContent = 'Listening... Click to stop';
+        
+        // Clear initial text if it's the default message
+        if (wordsDiv.textContent.includes('Start speaking')) {
+          wordsDiv.innerHTML = '';
+          p = document.createElement('p');
+          wordsDiv.appendChild(p);
+        }
+      }
+
+      function stopListening() {
+        recognition.stop();
+        isListening = false;
+        micButton.classList.remove('listening');
+        micButton.textContent = '🎤';
+        statusDiv.textContent = 'Click the microphone to start';
+      }
+
+      // Handle speech results
+      recognition.addEventListener('result', (e) => {
+        const transcript = Array.from(e.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+
+        const poopScript = transcript.replace(/poop|poo|shit|dump/gi, '💩');
+        const cleanScript = poopScript.replace(/fuck|fucking/gi, '🤬');
+        
+        p.textContent = cleanScript;
+
+        // If the result is final, create a new paragraph
+        if (e.results[e.results.length - 1].isFinal) {
+          p.classList.add('highlight');
+          setTimeout(() => {
+            p.classList.remove('highlight');
+          }, 1000);
+          
+          p = document.createElement('p');
+          wordsDiv.appendChild(p);
+        }
+      });
+
+      // Handle recognition events
+      recognition.addEventListener('start', () => {
+        console.log('Speech recognition started');
+      });
+
+      recognition.addEventListener('end', () => {
+        console.log('Speech recognition ended');
+        if (isListening) {
+          // Restart if we were still supposed to be listening
+          recognition.start();
+        }
+      });
+
+      recognition.addEventListener('error', (e) => {
+        console.error('Speech recognition error:', e.error);
+        stopListening();
+        
+        if (e.error === 'not-allowed') {
+          statusDiv.textContent = 'Microphone access denied. Please allow microphone access and refresh.';
+        } else if (e.error === 'network') {
+          statusDiv.textContent = 'Network error. Please check your connection.';
+        } else {
+          statusDiv.textContent = `Error: ${e.error}. Click to try again.`;
+        }
+      });
+
+      recognition.addEventListener('nomatch', () => {
+        console.log('No speech was recognized');
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.ctrlKey) {
+          e.preventDefault();
+          if (!isListening) {
+            startListening();
+          } else {
+            stopListening();
+          }
+        }
+        
+        if (e.code === 'KeyC' && e.ctrlKey && e.shiftKey) {
+          e.preventDefault();
+          clearButton.click();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

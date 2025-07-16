@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Follow Along Link Highlighter</title>
+    <style>
+        html {
+            box-sizing: border-box;
+        }
+
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(45deg, #b40d0d 0%, #020103 100%);
+            padding: 20px;
+        }
+
+        .wrapper {
+            margin: 0 auto;
+            max-width: 500px;
+            color: white;
+            line-height: 1.8;
+            font-size: 20px;
+            position: relative;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+            background: rgba(0,0,0,0.05);
+            border-radius: 20px;
+            padding: 5px 10px;
+            display: inline-block;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        a:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .highlight {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: white;
+            border-radius: 20px;
+            opacity: 0;
+            transition: all 0.2s;
+            transform: scale(0);
+            pointer-events: none;
+        }
+
+        .highlight.active {
+            opacity: 0.2;
+            transform: scale(1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="highlight"></div>
+    
+    <div class="wrapper">
+        <h1>Link Highlighter</h1>
+        
+        <p>Lorem ipsum dolor sit amet, <a href="#">consectetur</a> adipiscing elit. Sed do eiusmod tempor incididunt ut labore et <a href="#">dolore magna</a> aliqua. Ut enim ad minim veniam.</p>
+        
+        <p>Quis nostrud <a href="#">exercitation</a> ullamco laboris nisi ut aliquip ex ea commodo consequat. <a href="#">Duis aute irure</a> dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        
+        <p>Excepteur sint occaecat <a href="#">cupidatat non proident</a>, sunt in culpa qui officia deserunt mollit anim id est <a href="#">laborum</a>.</p>
+        
+        <p>Sed ut perspiciatis unde omnis iste <a href="#">natus error</a> sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo <a href="#">inventore veritatis</a> et quasi architecto beatae vitae dicta sunt explicabo.</p>
+        
+        <p>Nemo enim ipsam voluptatem quia <a href="#">voluptas sit</a> aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+        
+        <p>Neque porro <a href="#">quisquam est</a>, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi <a href="#">tempora incidunt</a> ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+        
+        <p>Ut enim ad minima veniam, quis nostrum <a href="#">exercitationem ullam</a> corporis suscipit laboriosam, nisi ut aliquid ex ea commodi <a href="#">consequatur</a>?</p>
+    </div>
+
+    <script>
+        // Get all links and the highlight element
+        const links = document.querySelectorAll('a');
+        const highlight = document.querySelector('.highlight');
+
+        function highlightLink() {
+            // Get the dimensions and position of the current link
+            const linkCoords = this.getBoundingClientRect();
+            
+            // Account for scroll position
+            const coords = {
+                width: linkCoords.width,
+                height: linkCoords.height,
+                top: linkCoords.top + window.scrollY,
+                left: linkCoords.left + window.scrollX
+            };
+
+            // Apply the coordinates to the highlight element
+            highlight.style.width = `${coords.width}px`;
+            highlight.style.height = `${coords.height}px`;
+            highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+            
+            // Make the highlight visible
+            highlight.classList.add('active');
+        }
+
+        function removeHighlight() {
+            highlight.classList.remove('active');
+        }
+
+        // Add event listeners to all links
+        links.forEach(link => {
+            link.addEventListener('mouseenter', highlightLink);
+            link.addEventListener('mouseleave', removeHighlight);
+        });
+
+        // Optional: Add keyboard navigation support
+        links.forEach(link => {
+            link.addEventListener('focus', highlightLink);
+            link.addEventListener('blur', removeHighlight);
+        });
+    </script>
+</body>
+</html>

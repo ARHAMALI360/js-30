@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geolocation Compass & Speedometer</title>
+    <style>
+        html {
+            font-size: 100px;
+        }
+
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: 
+                radial-gradient(black 15%, transparent 16%) 0 0,
+                radial-gradient(black 15%, transparent 16%) 8px 8px,
+                radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+                radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+            background-color: #282828;
+            background-size: 16px 16px;
+            color: white;
+        }
+
+        .arrow {
+            width: 250px;
+            overflow: hidden;
+            transition: all 0.2s;
+            transform: rotate(0deg);
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 0.5rem;
+            font-weight: 100;
+            letter-spacing: 0.1rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .speed {
+            font-size: 0.4rem;
+            text-align: center;
+            margin: 0.2rem 0;
+        }
+
+        .speed-value {
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .info {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.15rem;
+            max-width: 300px;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff6b6b;
+            padding: 1rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.15rem;
+            max-width: 300px;
+        }
+
+        .compass-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            padding: 2rem;
+            border: 3px solid #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="compass-container">
+        <svg class="arrow" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+            <g>
+                <path fill="#ffffff" d="M32,1.824C15.361,1.824,1.825,15.361,1.825,32c0,16.639,13.537,30.176,30.175,30.176  S62.175,48.639,62.175,32C62.175,15.361,48.639,1.824,32,1.824z M32,59.816C16.542,59.816,4.185,47.458,4.185,32  S16.542,4.184,32,4.184S59.815,16.542,59.815,32S47.458,59.816,32,59.816z"/>
+                <path fill="#ffffff" d="M32.42,7.287c0.436-0.104,0.787,0.098,0.787,0.45v48.527c0,0.353-0.351,0.554-0.787,0.45  c-10.024-2.395-17.621-11.086-17.621-21.714C14.799,18.373,22.396,9.682,32.42,7.287z"/>
+                <path fill="#ff4444" d="M32.42,7.287c0.436-0.104,0.787,0.098,0.787,0.45v48.527c0,0.353-0.351,0.554-0.787,0.45  c10.024-2.395,17.621-11.086,17.621-21.714C50.041,18.373,42.444,9.682,32.42,7.287z"/>
+            </g>
+        </svg>
+    </div>
+
+    <h1>Compass & Speedometer</h1>
+    
+    <div class="speed">
+        Speed: <span class="speed-value">0</span> km/h
+    </div>
+
+    <div class="info">
+        <p>📱 This works best on mobile devices with GPS.</p>
+        <p>🧭 The red part of the compass points North.</p>
+        <p>🚗 Speed will show when you're moving.</p>
+    </div>
+
+    <script>
+        const arrow = document.querySelector('.arrow');
+        const speedValue = document.querySelector('.speed-value');
+        const infoDiv = document.querySelector('.info');
+
+        function success(position) {
+            console.log('Position data:', position);
+            
+            // Update speed (convert from m/s to km/h)
+            const speed = position.coords.speed;
+            if (speed !== null && speed !== undefined) {
+                const kmh = Math.round(speed * 3.6); // Convert m/s to km/h
+                speedValue.textContent = kmh;
+            } else {
+                speedValue.textContent = '0';
+            }
+            
+            // Update compass direction
+            const heading = position.coords.heading;
+            if (heading !== null && heading !== undefined) {
+                arrow.style.transform = `rotate(${heading}deg)`;
+            }
+            
+            // Update info to show it's working
+            infoDiv.innerHTML = `
+                <p>✅ GPS is active!</p>
+                <p>Latitude: ${position.coords.latitude.toFixed(6)}</p>
+                <p>Longitude: ${position.coords.longitude.toFixed(6)}</p>
+                <p>Accuracy: ${Math.round(position.coords.accuracy)}m</p>
+            `;
+        }
+
+        function error(err) {
+            console.error('Geolocation error:', err);
+            
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            
+            let errorMessage = '';
+            switch(err.code) {
+                case err.PERMISSION_DENIED:
+                    errorMessage = "❌ Location access denied. Please enable location services.";
+                    break;
+                case err.POSITION_UNAVAILABLE:
+                    errorMessage = "❌ Location information unavailable.";
+                    break;
+                case err.TIMEOUT:
+                    errorMessage = "❌ Location request timed out.";
+                    break;
+                default:
+                    errorMessage = "❌ An unknown error occurred.";
+                    break;
+            }
+            
+            errorDiv.textContent = errorMessage;
+            document.body.appendChild(errorDiv);
+        }
+
+        // Check if geolocation is supported
+        if ('geolocation' in navigator) {
+            console.log('Geolocation is supported');
+            
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+            
+            // Watch position continuously
+            const watchId = navigator.geolocation.watchPosition(success, error, options);
+            
+            // Optional: Clear watch after some time to save battery
+            // setTimeout(() => {
+            //     navigator.geolocation.clearWatch(watchId);
+            // }, 300000); // 5 minutes
+            
+        } else {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = "❌ Geolocation is not supported by this browser.";
+            document.body.appendChild(errorDiv);
+        }
+    </script>
+</body>
+</html>

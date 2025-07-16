@@ -1,0 +1,44 @@
+html {
+    background: #d61c1c;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+    text-align: center;
+  }
+  
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  
+  .clock {
+    width: 30rem;
+    height: 30rem;
+    border: 20px solid rgb(12, 2, 2);
+    border-radius: 50%;
+    padding: 2rem;
+    position: relative;
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.2);
+  }
+  
+  .clock-face {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-3px); /* fix small visual glitch */
+  }
+  
+  .hand {
+    width: 50%;
+    height: 6px;
+    background: #be9699;
+    position: absolute;
+    top: 50%;
+    transform-origin: 100%;
+    transform: rotate(90deg);
+    transition: all 0.05s;
+    transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
+  }
+  

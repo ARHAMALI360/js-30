@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Key Sequence Detection</title>
+  <style>
+    html {
+      font-family: sans-serif;
+      font-size: 20px;
+      line-height: 1.5;
+      background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #333;
+    }
+    
+    .wrapper {
+      max-width: 600px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      margin-top: 0;
+      font-size: 2rem;
+    }
+    
+    .keys {
+      font-weight: bold;
+      background-color: #ffd166;
+      padding: 0 5px;
+      border-radius: 4px;
+    }
+    
+    .logs {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+    
+    .success {
+      font-size: 1.5rem;
+      color: #2b9348;
+      font-weight: bold;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .cornify {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>🔑 Key Sequence Detection</h1>
+    <p>Enter the secret code: <span class="keys">wesbos</span></p>
+    <p>Press the keys in sequence to trigger a surprise!</p>
+    <div class="logs" id="keyLog"></div>
+    <div class="success" id="success">🎉 YOU DID IT! 🎉</div>
+    <p class="cornify">Using <a href="https://www.cornify.com" target="_blank">Cornify</a> for the unicorn magic!</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cornify.js/1.0/cornify.js"></script>
+  <script>
+    // Store the keys pressed by the user
+    const pressed = [];
+    // The secret code to match
+    const secretCode = 'wesbos';
+    
+    // Element to show the key log
+    const keyLogElement = document.getElementById('keyLog');
+    // Element to show success message
+    const successElement = document.getElementById('success');
+    
+    // Listen for keyup events on the window
+    window.addEventListener('keyup', e => {
+      // Log the key pressed to our div (for demonstration)
+      const keyLog = document.createElement('div');
+      keyLog.textContent = `Key pressed: ${e.key}`;
+      keyLogElement.appendChild(keyLog);
+      keyLogElement.scrollTop = keyLogElement.scrollHeight;
+      
+      // Add the key to our pressed array
+      pressed.push(e.key);
+      
+      // Only keep the most recent keys (same length as the secret code)
+      // This creates a "sliding window" of the last N keys
+      if (pressed.length > secretCode.length) {
+        pressed.shift(); // Remove the first item if we exceed the code length
+      }
+      
+      // Check if the current sequence matches our secret code
+      if (pressed.join('') === secretCode) {
+        console.log('DING DING! YOU GOT IT!');
+        
+        // Add some unicorn magic with cornify
+        cornify_add();
+        
+        // Show success message
+        successElement.style.display = 'block';
+        
+        // Reset the array after a successful match (optional)
+        // pressed.length = 0;
+      } else {
+        // Hide success message if not matched
+        successElement.style.display = 'none';
+      }
+      
+      console.log(pressed);
+    });
+  </script>
+</body>
+</html>
